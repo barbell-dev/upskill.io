@@ -8,11 +8,11 @@ const connectionString = process.env.CONNECTION_STRING;
 let log = console.log;
 const port = process.env.PORT || 8080;
 const coursesRouter = require("./routes/courses");
-const adminRouter = require("./routes/admin");
+const creatorRouter = require("./routes/creator");
 const userRouter = require("./routes/user");
 app.use("/api/v1/user", userRouter); //first parameter need not be written in the userRouter or the router mentioned in the second argument.
 app.use("/api/v1/courses", coursesRouter);
-app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/admin", creatorRouter);
 async function main() {
   await mongoose
     .connect(connectionString)

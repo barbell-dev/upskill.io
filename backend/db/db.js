@@ -55,7 +55,7 @@ const CourseCreatorsModel = mongoose.model(
 
 const CoursesSchema = new mongoose.Schema({
   courseName: { type: String, unique: true },
-  courseCreator: {
+  courseCreatorId: {
     type: mongoose.Schema.ObjectId,
     ref: "CourseCreators",
     required: true,

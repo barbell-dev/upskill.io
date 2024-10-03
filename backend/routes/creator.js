@@ -1,31 +1,23 @@
 const { Router } = require("express");
-// const app = express();
-const userAuth = require("../middlewares/userAuth");
+const creatorAuth = require("../middlewares/creatorAuth");
+const { CourseCreatorsModel, CoursesModel } = require("../db/db");
+const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 dotenv.config();
-const { z } = require("zod");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const {
-  UsersModel,
-  CourseCreatorsModel,
-  CoursesModel,
-  PurchasesModel,
-} = require("../db/db");
-const userRouter = Router();
-userRouter.use(userAuth);
-userRouter.post("/login", (req, res) => {
+const creatorRouter = Router();
+creatorRouter.use(creatorAuth);
+creatorRouter.post("/login", async (req, res) => {
   let token = req.headers.token;
   if (!token) {
     token = jwt.sign({ id: req.body.id }, process.env.JWT_SECRET, {
       noTimestamp: true,
     });
-    res.json({ token: token, message: "Login successful", status: 200 });
+    res.json({ token: token, message: "Admin login successful", status: 200 });
     return;
   }
   // The case where token does not exist in the headers is handled in the userAuth middleware itself.
 });
-userRouter.post("/signup", async (req, res) => {
+creatorRouter.post("/signup", async (req, res) => {
   const requiredBody = z.object({
     email: z.string().max(50).min(11).email(),
     firstName: z.string().min(1).max(10),
@@ -78,5 +70,47 @@ userRouter.post("/signup", async (req, res) => {
     }
   }
 });
-userRouter.put("/updateProfileData", (req, res) => {});
-module.exports = userRouter;
+// creatorRouter.use(creatorAuth);
+creatorRouter.post("/createCourse", async (req, res) => {
+  let courseName = req.body.courseName;
+  let amount = req.body.amount;
+  let token = req.headers.token;
+  let coursesSearch = await CoursesModel.findOne({ courseName: courseName });
+  if (coursesSearch) {
+    res.json({ message: "Course with the given name already exists." });
+    return;
+  } else {
+    let courseCreatorData = jwt.verify(token, process.env.JWT_SECRET);
+    let courseCreatorId = courseCreatorData.id;
+
+    await CoursesModel.create({
+      courseName: courseName,
+      courseCreatorId: courseCreatorId,
+      amount: amount,
+    })
+      .then(() => {
+        res.json({ message: "Course created successfully.", status: 200 });
+        return;
+      })
+      .catch((e) => {
+        res.json({ message: `Unknown error occured. ${e}`, status: 503 });
+        return;
+      });
+  }
+});
+creatorRouter.get("/viewAllCourses", async (req, res) => {
+  try {
+    const allCourses = await CoursesModel.find();
+    res.json({
+      message: "Fetched all courses successfully",
+      status: 200,
+      courses: allCourses,
+    });
+    return;
+  } catch (e) {
+    res.json({ message: `Unknown error occured ${e}`, status: 503 });
+    return;
+  }
+});
+creatorRouter.put("/updateCourse");
+module.exports = creatorRouter;
