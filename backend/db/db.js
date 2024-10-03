@@ -5,16 +5,6 @@ dotenv.config();
 const connectionString = process.env.CONNECTION_STRING;
 const ObjectId = mongoose.Schema.ObjectId;
 
-(async () => {
-  try {
-    await mongoose.connect(connectionString);
-    log("Connected.");
-  } catch (e) {
-    log(e);
-    return;
-  }
-})();
-
 /*
 Users: {
     _id=>ObjectId
