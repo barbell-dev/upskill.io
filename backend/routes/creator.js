@@ -112,5 +112,55 @@ creatorRouter.get("/viewAllCourses", async (req, res) => {
     return;
   }
 });
-creatorRouter.put("/updateCourse");
+creatorRouter.put("/updateCourse", async (req, res) => {
+  try {
+    let token = req.headers.token;
+    let courseCreatorData = jwt.verify(token, process.env.JWT_SECRET);
+    let courseCreatorId = courseCreatorData._id;
+    const oldCourseName = req.body.oldCourseName;
+    const newCourseName = req.body.newCourseName;
+    const newAmount = req.body.newAmount;
+    const oldAmount = req.body.oldAmount;
+    if (oldAmount == null || oldAmount == undefined) {
+      await CoursesModel.updateOne(
+        {
+          courseName: oldCourseName,
+          amount: oldAmount,
+          courseCreatorId: courseCreatorId,
+        },
+        { $set: { courseName: newCourseName } }
+      ).then(() => {
+        res.json({ message: "updated", status: 200 });
+        return;
+      });
+    } else if (oldCourseName == undefined || oldCourseName == null) {
+      CoursesModel.updateOne(
+        {
+          courseName: oldCourseName,
+          amount: oldAmount,
+          courseCreatorId: courseCreatorId,
+        },
+        { $set: { amount: newAmount } }
+      ).then(() => {
+        res.json({ message: "updated", status: 200 });
+        return;
+      });
+    } else {
+      CoursesModel.updateOne(
+        {
+          courseName: oldCourseName,
+          amount: oldAmount,
+          courseCreatorId: courseCreatorId,
+        },
+        { $set: { courseName: newCourseName, amount: newAmount } }
+      ).then(() => {
+        res.json({ message: "updated", status: 200 });
+        return;
+      });
+    }
+  } catch (e) {
+    // log(e);
+    res.json({ message: `Unknown error occured ${e}`, status: 503 });
+  }
+});
 module.exports = creatorRouter;

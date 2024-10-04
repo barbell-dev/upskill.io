@@ -70,15 +70,15 @@ const PurchasesSchema = new mongoose.Schema({
     required: true,
   },
   dateOfPurchase: String,
-  courseId: {
-    type: ObjectId,
+  courseName: {
+    type: String,
     ref: "Courses",
     required: true,
   },
 });
 
-PurchasesSchema.index({ purchasedBy: 1, courseId: 1 }, { unique: true });
-//while using PurchaseModel , I gotta make sure to use PurchaseModel(... coursesId._id) inorder to access the courseId of the course . coursesId.courseCreator would give the courseCreator Id of the course
+PurchasesSchema.index({ purchasedBy: 1, courseName: 1 }, { unique: true });
+//while using PurchaseModel , I gotta make sure to use PurchaseModel(... coursesId._id) inorder to access the courseId of the course . courseId.courseCreatorId would give the courseCreator Id of the course
 const PurchasesModel = mongoose.model("Purchases", PurchasesSchema);
 module.exports = {
   UsersModel,
