@@ -62,5 +62,7 @@ coursesRouter.get("/viewAllCourses", async (req, res) => {
     return;
   });
 });
-coursesRouter.get("/viewParticularCourse", (req, res) => {});
+coursesRouter.get("/viewParticularCourse", (req, res) => {
+  const courseName = req.body.courseName;
+});
 module.exports = coursesRouter;

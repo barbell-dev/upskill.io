@@ -33,7 +33,7 @@ creatorRouter.post("/signup", async (req, res) => {
     });
     return;
   } else {
-    const checkIfUserAlreadyExists = await UsersModel.findOne({
+    const checkIfUserAlreadyExists = await CourseCreatorsModel.findOne({
       email: parsedBody.data.email,
     });
     if (checkIfUserAlreadyExists) {
