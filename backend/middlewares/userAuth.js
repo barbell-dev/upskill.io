@@ -16,7 +16,9 @@ async function userAuth(req, res, next) {
         return;
       }
     } catch (e) {
-      res.json({ message: `Unknown error occured : ${e}`, status: 503 });
+      res
+        .status(503)
+        .json({ message: `Unknown error occured : ${e}`, status: 503 });
       return;
     }
   } else if (!req.body.email || !req.body.password) {

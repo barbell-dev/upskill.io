@@ -13,19 +13,9 @@ const {
   PurchasesModel,
 } = require("../db/db");
 const userRouter = Router();
-userRouter.use(userAuth);
-userRouter.post("/login", (req, res) => {
-  let token = req.headers.token;
-  if (!token) {
-    token = jwt.sign({ id: req.body.id }, process.env.JWT_SECRET, {
-      noTimestamp: true,
-    });
-    res.json({ token: token, message: "Login successful", status: 200 });
-    return;
-  }
-  // The case where token does not exist in the headers is handled in the userAuth middleware itself.
-});
 userRouter.post("/signup", async (req, res) => {
+  // console.log("here");
+  // console.log(req);
   const requiredBody = z.object({
     email: z.string().max(50).min(11).email(),
     firstName: z.string().min(1).max(10),
@@ -60,7 +50,7 @@ userRouter.post("/signup", async (req, res) => {
           lastName: parsedBody.data.lastName,
           password: hashedPassword,
         }).then(async () => {
-          let response = await UserModel.findOne({
+          let response = await UsersModel.findOne({
             email: parsedBody.data.email,
           });
           let token = jwt.sign({ id: response._id }, process.env.JWT_SECRET);
@@ -72,11 +62,28 @@ userRouter.post("/signup", async (req, res) => {
           return;
         });
       } catch (e) {
-        res.json({ message: `Unkown error occured.${e}`, status: 503 });
+        res.status(503).json({
+          message: `Unkown error occured.${e}`,
+        });
         return;
       }
     }
   }
 });
+userRouter.use(userAuth);
+userRouter.post("/login", (req, res) => {
+  let token = req.headers.token;
+  if (!token) {
+    token = jwt.sign({ id: req.body.id }, process.env.JWT_SECRET, {
+      noTimestamp: true,
+    });
+    res.json({ token: token, message: "Login successful", status: 200 });
+    return;
+  } else {
+    res.status(200).json({ message: "Logged in through token" });
+  }
+  // The case where token does not exist in the headers is handled in the userAuth middleware itself.
+});
+
 userRouter.put("/updateProfileData", (req, res) => {});
 module.exports = userRouter;
