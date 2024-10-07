@@ -4,15 +4,38 @@ const { CourseCreatorsModel, CoursesModel } = require("../db/db");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 dotenv.config();
+const aws = require("aws-sdk");
+const multer = require("multer");
+const multerS3 = require("multer-s3");
+aws.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
+const BUCKET_NAME = process.env.BUCKET_NAME;
+const s3 = new AWS.S3();
+const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: BUCKET_NAME,
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: file.fieldName });
+    },
+    key: function (req, file, cb) {
+      cb(null, file.originalname);
+    },
+  }),
+});
 const creatorRouter = Router();
 creatorRouter.use(creatorAuth);
+
 creatorRouter.post("/login", async (req, res) => {
   let token = req.headers.token;
   if (!token) {
     token = jwt.sign({ id: req.body.id }, process.env.JWT_SECRET, {
       noTimestamp: true,
     });
-    res.json({ token: token, message: "Admin login successful", status: 200 });
+    res.status(200).json({ token: token, message: "Admin login successful" });
     return;
   }
   // The case where token does not exist in the headers is handled in the userAuth middleware itself.
@@ -71,7 +94,8 @@ creatorRouter.post("/signup", async (req, res) => {
   }
 });
 // creatorRouter.use(creatorAuth);
-creatorRouter.post("/createCourse", async (req, res) => {
+creatorRouter.post("/createCourse", upload.single("file"), async (req, res) => {
+  //Mongo sh
   let courseName = req.body.courseName;
   let amount = req.body.amount;
   let token = req.headers.token;
@@ -86,6 +110,7 @@ creatorRouter.post("/createCourse", async (req, res) => {
     await CoursesModel.create({
       courseName: courseName,
       courseCreatorId: courseCreatorId,
+      courseThumbnailUrl: req.file.location,
       amount: amount,
     })
       .then(() => {
@@ -101,9 +126,9 @@ creatorRouter.post("/createCourse", async (req, res) => {
 creatorRouter.get("/viewAllCourses", async (req, res) => {
   try {
     const allCourses = await CoursesModel.find();
-    res.json({
+    res.status(200).json({
       message: "Fetched all courses successfully",
-      status: 200,
+
       courses: allCourses,
     });
     return;

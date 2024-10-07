@@ -61,6 +61,7 @@ const CoursesSchema = new mongoose.Schema({
     required: true,
   },
   amount: Number,
+  courseThumbnailUrl: String,
 });
 const CoursesModel = mongoose.model("Courses", CoursesSchema);
 const PurchasesSchema = new mongoose.Schema({
