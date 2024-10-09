@@ -6,18 +6,20 @@ dotenv.config();
 const { z } = require("zod");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
 const {
   UsersModel,
   CourseCreatorsModel,
   CoursesModel,
   PurchasesModel,
 } = require("../db/db");
+const express = require("express");
 const userRouter = Router();
 userRouter.post("/signup", async (req, res) => {
   // console.log("here");
-  // console.log(req);
+  console.log(req.body);
   const requiredBody = z.object({
-    email: z.string().max(50).min(11).email(),
+    email: z.string().max(50).min(3).email(),
     firstName: z.string().min(1).max(10),
     lastName: z.string().min(1).max(10),
     password: z.string(),
