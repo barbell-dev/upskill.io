@@ -74,15 +74,20 @@ userRouter.post("/signup", async (req, res) => {
 });
 userRouter.use(userAuth);
 userRouter.post("/login", (req, res) => {
+  // console.log("here");
   let token = req.headers.token;
-  if (!token) {
+
+  if (token == "null" || token == "undefined") {
     token = jwt.sign({ id: req.body.id }, process.env.JWT_SECRET, {
       noTimestamp: true,
     });
-    res.json({ token: token, message: "Login successful", status: 200 });
+    res
+      .status(200)
+      .json({ token: token, message: "Login successful", status: 200 });
     return;
   } else {
-    res.status(200).json({ message: "Logged in through token" });
+    res.status(200).json({ message: "Logged in through token", token: token });
+    return;
   }
   // The case where token does not exist in the headers is handled in the userAuth middleware itself.
 });
