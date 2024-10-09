@@ -13,7 +13,7 @@ const userRouter = require("./routes/user");
 app.use(express.json());
 app.use("/api/v1/user", userRouter); //first parameter need not be written in the userRouter or the router mentioned in the second argument.
 app.use("/api/v1/courses", coursesRouter);
-app.use("/api/v1/admin", creatorRouter);
+app.use("/api/v1/creator", creatorRouter);
 async function main() {
   // log("here");
   await mongoose

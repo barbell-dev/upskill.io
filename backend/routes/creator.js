@@ -12,8 +12,8 @@ aws.config.update({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: process.env.AWS_REGION,
 });
-const BUCKET_NAME = process.env.BUCKET_NAME;
-const s3 = new AWS.S3();
+const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME;
+const s3 = new aws.S3();
 const upload = multer({
   storage: multerS3({
     s3: s3,
@@ -27,19 +27,6 @@ const upload = multer({
   }),
 });
 const creatorRouter = Router();
-creatorRouter.use(creatorAuth);
-
-creatorRouter.post("/login", async (req, res) => {
-  let token = req.headers.token;
-  if (!token) {
-    token = jwt.sign({ id: req.body.id }, process.env.JWT_SECRET, {
-      noTimestamp: true,
-    });
-    res.status(200).json({ token: token, message: "Admin login successful" });
-    return;
-  }
-  // The case where token does not exist in the headers is handled in the userAuth middleware itself.
-});
 creatorRouter.post("/signup", async (req, res) => {
   const requiredBody = z.object({
     email: z.string().max(50).min(11).email(),
@@ -69,16 +56,19 @@ creatorRouter.post("/signup", async (req, res) => {
       const password = parsedBody.data.password;
       const hashedPassword = await bcrypt.hash(password, 5);
       try {
-        await UsersModel.create({
+        await CourseCreatorsModel.create({
           email: parsedBody.data.email,
           firstName: parsedBody.data.firstName,
           lastName: parsedBody.data.lastName,
           password: hashedPassword,
         }).then(async () => {
-          let response = await UserModel.findOne({
+          let response = await CourseCreatorsModel.findOne({
             email: parsedBody.data.email,
           });
-          let token = jwt.sign({ id: response._id }, process.env.JWT_SECRET);
+          let token = jwt.sign(
+            { id: response._id },
+            process.env.JWT_ADMIN_SECRET
+          );
           res.json({
             message: "Successfully signed up.",
             status: 200,
@@ -93,6 +83,20 @@ creatorRouter.post("/signup", async (req, res) => {
     }
   }
 });
+creatorRouter.use(creatorAuth);
+
+creatorRouter.post("/login", async (req, res) => {
+  let token = req.headers.token;
+  if (!token) {
+    token = jwt.sign({ id: req.body.id }, process.env.JWT_ADMIN_SECRET, {
+      noTimestamp: true,
+    });
+    res.status(200).json({ token: token, message: "Admin login successful" });
+    return;
+  }
+  // The case where token does not exist in the headers is handled in the userAuth middleware itself.
+});
+
 // creatorRouter.use(creatorAuth);
 creatorRouter.post("/createCourse", upload.single("file"), async (req, res) => {
   //Mongo sh
@@ -100,11 +104,12 @@ creatorRouter.post("/createCourse", upload.single("file"), async (req, res) => {
   let amount = req.body.amount;
   let token = req.headers.token;
   let coursesSearch = await CoursesModel.findOne({ courseName: courseName });
+  console.log("here");
   if (coursesSearch) {
     res.json({ message: "Course with the given name already exists." });
     return;
   } else {
-    let courseCreatorData = jwt.verify(token, process.env.JWT_SECRET);
+    let courseCreatorData = jwt.verify(token, process.env.JWT_ADMIN_SECRET);
     let courseCreatorId = courseCreatorData.id;
 
     await CoursesModel.create({
@@ -137,10 +142,30 @@ creatorRouter.get("/viewAllCourses", async (req, res) => {
     return;
   }
 });
+creatorRouter.get("/viewYourCourses", async (req, res) => {
+  const courseCreatorData = jwt.verify(
+    req.headers.token,
+    process.env.JWT_ADMIN_SECRET
+  );
+  const courseCreatorId = courseCreatorData._id;
+  try {
+    const courses = await CoursesModel.find({
+      courseCreatorId: courseCreatorId,
+    });
+    res.json({
+      message: "Courses fetched successfully for the particular creator",
+      courses: courses,
+    });
+    return;
+  } catch (e) {
+    res.status(503).json({ message: `Unkown error occured. ${e}` });
+    return;
+  }
+});
 creatorRouter.put("/updateCourse", async (req, res) => {
   try {
     let token = req.headers.token;
-    let courseCreatorData = jwt.verify(token, process.env.JWT_SECRET);
+    let courseCreatorData = jwt.verify(token, process.env.JWT_ADMIN_SECRET);
     let courseCreatorId = courseCreatorData._id;
     const oldCourseName = req.body.oldCourseName;
     const newCourseName = req.body.newCourseName;

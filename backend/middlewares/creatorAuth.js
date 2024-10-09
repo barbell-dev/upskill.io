@@ -8,7 +8,7 @@ async function creatorAuth(req, res, next) {
   let token = req.headers.token;
   if (token) {
     try {
-      const verifyToken = jwt.verify(token, process.env.JWT_SECRET);
+      const verifyToken = jwt.verify(token, process.env.JWT_ADMIN_SECRET);
       if (verifyToken) {
         next();
       } else {
