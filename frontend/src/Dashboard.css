@@ -1,5 +1,8 @@
 .dashboard {
-  height: inherit;
+  display: flex;
+  flex-direction: column;
   width: inherit;
-  background-color: aqua;
+  height: inherit;
+  background-color: red;
+  overflow: hidden;
 }

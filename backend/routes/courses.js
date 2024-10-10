@@ -40,7 +40,9 @@ coursesRouter.get("/viewPurchasedCourses", async (req, res) => {
     const purchasedCoursesOfLoggedInUser = await PurchasesModel.find({
       purchasedBy: userId,
     });
-    res.json({
+
+    console.log(purchasedCoursesOfLoggedInUser);
+    res.status(200).json({
       message: "Fetched the courses of logged in user successfully.",
       status: 200,
       purchasedCourses: purchasedCoursesOfLoggedInUser,
@@ -54,7 +56,7 @@ coursesRouter.get("/viewPurchasedCourses", async (req, res) => {
 });
 coursesRouter.get("/viewAllCourses", async (req, res) => {
   const allCourses = await CoursesModel.find().then(() => {
-    res.json({
+    res.status(200).json({
       message: "Fetched all courses successfully.",
       status: 200,
       allCourses: allCourses,
