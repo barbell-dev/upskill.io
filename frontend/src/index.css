@@ -1,12 +1,10 @@
 html,
-body {
-  margin: 0;
-  padding: 0;
-  width: 100vw; /* Full viewport width */
-  height: 100vh; /* Full viewport height */
-}
-
+body,
 #root {
-  width: inherit;
-  height: inherit;
+  height: 100%; /* Ensure the entire screen height is available */
+  margin: 0; /* Remove default margins */
+  padding: 0; /* Remove default padding */
+}
+body {
+  background-color: green;
 }

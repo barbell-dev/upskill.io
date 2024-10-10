@@ -36,7 +36,7 @@ export default function Signup() {
 
   return (
     <div>
-      <p>Signup form</p>
+      <p>Signup</p>
       <br></br>
       <form onSubmit={handleSignup}>
         {/* Removed action and method attributes */}

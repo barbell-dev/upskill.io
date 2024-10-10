@@ -1,8 +1,14 @@
 .dashboard {
   display: flex;
   flex-direction: column;
-  width: inherit;
-  height: inherit;
+  justify-content: start;
+  align-items: start;
+  width: 100%;
+  height: 100%;
   background-color: red;
   overflow: hidden;
+}
+.dashboard button {
+  margin-right: 20px;
+  margin-top: 30px;
 }

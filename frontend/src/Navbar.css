@@ -1,8 +1,20 @@
 .navbar {
   display: flex;
-  justify-content: space-evenly;
+  /* justify-content: flex-start; */
+  align-items: center;
+  background-color: aqua;
+  padding: 0;
+  width: 100%;
+  /* padding: 0%; */
 }
 .navbar button:hover {
   /* color: yellow; */
   cursor: pointer;
+}
+.navbar i:hover {
+  cursor: pointer;
+  /* margin-top: 24px; */
+}
+.navbar #logoutButton {
+  margin-left: 1140px;
 }
