@@ -27,7 +27,7 @@ userRouter.post("/signup", async (req, res) => {
 
   const parsedBody = requiredBody.safeParse(req.body);
   if (!parsedBody.success) {
-    res.json({
+    res.status(403).json({
       message: "Incorrect format" + parsedBody.error,
       status: 403,
     });
@@ -37,7 +37,7 @@ userRouter.post("/signup", async (req, res) => {
       email: parsedBody.data.email,
     });
     if (checkIfUserAlreadyExists) {
-      res.json({
+      res.status(403).json({
         message: `User with given email already exists.Try again with a different email.`,
         status: 403,
       });
@@ -56,7 +56,7 @@ userRouter.post("/signup", async (req, res) => {
             email: parsedBody.data.email,
           });
           let token = jwt.sign({ id: response._id }, process.env.JWT_SECRET);
-          res.json({
+          res.status(200).json({
             message: "Successfully signed up.",
             status: 200,
             token: token,
@@ -91,6 +91,6 @@ userRouter.post("/login", (req, res) => {
   }
   // The case where token does not exist in the headers is handled in the userAuth middleware itself.
 });
-
+userRouter.get("/getFirstName", (req, res) => []);
 userRouter.put("/updateProfileData", (req, res) => {});
 module.exports = userRouter;

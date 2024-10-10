@@ -1,0 +1,12 @@
+.navbar {
+  display: flex;
+  justify-content: space-evenly;
+}
+.navbar a:hover {
+  color: yellow;
+  cursor: pointer;
+}
+#my-courses:not(:hover) {
+  color: red;
+  box-shadow: 10;
+}

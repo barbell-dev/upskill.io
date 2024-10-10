@@ -1,7 +1,7 @@
 import React from "react";
 
 export default function Signup() {
-  const handleSubmit = async (event) => {
+  const handleSignup = async (event) => {
     event.preventDefault(); // Prevent default form submission
 
     const formData = {
@@ -19,16 +19,18 @@ export default function Signup() {
         },
         body: JSON.stringify(formData), // Send form data as JSON
       });
-
       console.log(response);
-      if (response.status === 200) {
-        const result = await response.json();
+      const result = await response.json();
+      console.log(result);
+      if (result.status === 200) {
+        // const result = await response.json();
         alert("Signup successful!"); // Show success alert
+        window.location.href = "/dashboard";
       } else {
-        alert("Signup failed. Please try again."); // Show error alert for non-2xx responses
+        alert(result.message); // Show error alert for non-2xx responses
       }
     } catch (error) {
-      alert("An error occurred. Please try again later."); // Show alert for network errors
+      alert("An error occurred. Please try again later." + error); // Show alert for network errors
     }
   };
 
@@ -36,7 +38,7 @@ export default function Signup() {
     <div>
       <p>Signup form</p>
       <br></br>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSignup}>
         {/* Removed action and method attributes */}
         <label>First name</label>
         <input
