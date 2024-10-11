@@ -1,11 +1,18 @@
+import { useState, useEffect } from "react";
+
 export default function CreatorDashboard() {
+  const [image, setImage] = useState();
   async function createCourse(event) {
     event.preventDefault();
     const token = localStorage.getItem("token");
-    const formData = {
-      thumbnail: event.target.thumbnail.value,
-      amount: event.target.amount.value,
-    };
+
+    let formData = new FormData();
+    // console.log(image);
+    formData.append("image", image);
+    formData.append("amount", event.target.amount.value);
+    for (let i of formData.values()) {
+      console.log(i);
+    }
     const response = await fetch(
       "http://localhost:8080/api/v1/creator/createCourse",
       {
@@ -26,17 +33,27 @@ export default function CreatorDashboard() {
       return;
     }
   }
+  function handleThumbnailChange(e) {
+    e.preventDefault();
+    setImage(e.target.files[0]);
+  }
   return (
     <div>
       <h1>Create a course</h1>
       <br></br>
       <form onSubmit={createCourse}>
-        <input type="file" name="thumbnail">
-          Thumbnail
-        </input>
-        <input type="number" name="amount">
-          Amount
-        </input>
+        <label> Thumbnail</label>
+        <input
+          type="file"
+          name="thumbnail"
+          accept="image/*"
+          onChange={handleThumbnailChange}
+        />
+        <br></br>
+
+        <label>Amount</label>
+        <input type="number" name="amount" min="1" />
+        <br></br>
 
         <button type="submit">Create course</button>
       </form>

@@ -6,17 +6,20 @@ const jwt = require("jsonwebtoken");
 const { CourseCreatorsModel } = require("../db/db");
 async function creatorAuth(req, res, next) {
   let token = req.headers.token;
-  if (token) {
+  console.log(token);
+  if (token != "null" && token != "undefined") {
     try {
       const verifyToken = jwt.verify(token, process.env.JWT_ADMIN_SECRET);
       if (verifyToken) {
         next();
       } else {
-        res.json({ message: "Invalid JSON token.", status: 404 });
+        res.status(403).json({ message: "Invalid JSON token.", status: 403 });
         return;
       }
     } catch (e) {
-      res.json({ message: `Unknown error occured : ${e}`, status: 503 });
+      res
+        .status(403)
+        .json({ message: `Unknown error occured : ${e}`, status: 503 });
       return;
     }
   } else if (!req.body.email || !req.body.password) {
@@ -37,11 +40,13 @@ async function creatorAuth(req, res, next) {
         req.body.id = response._id.toString();
         next();
       } else {
-        res.json({ message: "Invalid password.", status: 404 });
+        res.status(403).json({ message: "Invalid password.", status: 403 });
         return;
       }
     } catch (e) {
-      res.json({ message: `Unknown error occured. ${e}`, status: 503 });
+      res
+        .status(503)
+        .json({ message: `Unknown error occured. ${e}`, status: 503 });
       return;
     }
   }

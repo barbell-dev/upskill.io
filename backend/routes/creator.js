@@ -89,11 +89,16 @@ creatorRouter.use(creatorAuth);
 
 creatorRouter.post("/login", async (req, res) => {
   let token = req.headers.token;
-  if (!token) {
+  console.log("in creator login");
+  if (token == "null" || token == "undefined") {
     token = jwt.sign({ id: req.body.id }, process.env.JWT_ADMIN_SECRET, {
       noTimestamp: true,
     });
+    console.log(token);
     res.status(200).json({ token: token, message: "Admin login successful" });
+    return;
+  } else {
+    res.status(200).json({ message: "Logged in through token", token: token });
     return;
   }
   // The case where token does not exist in the headers is handled in the userAuth middleware itself.

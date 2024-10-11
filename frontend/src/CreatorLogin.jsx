@@ -24,7 +24,9 @@ export default function CreatorLogin() {
           }
         );
         const result = await response.json();
-        if (result.status == 200) {
+        // alert(JSON.stringify(result));
+        // console.log(result);
+        if (response.status == 200) {
           localStorage.setItem("token", result.token);
           window.location.href = "/creator/dashboard";
         } else {
