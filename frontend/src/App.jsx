@@ -8,6 +8,7 @@ import Login from "./Login";
 import Signup from "./Signup";
 import CreatorDashboard from "./CreatorDashboard";
 import CreatorLogin from "./CreatorLogin";
+import CreatorSignup from "./CreatorSignup";
 function App() {
   // console.log(document.querySelector("#root").parentElement);
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/creator/dashboard" element={<CreatorDashboard />} />
 
         <Route path="/creator/login" element={<CreatorLogin />} />
+        <Route path="/creator/signup" element={<CreatorSignup />} />
       </Routes>
     </BrowserRouter>
   );

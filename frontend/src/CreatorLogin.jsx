@@ -5,7 +5,7 @@ export default function CreatorLogin() {
   if (token != null && token != undefined) {
     window.location.href = "/creator/dashboard";
   } else {
-    const handleLogin = async (event) => {
+    const handleCreatorLogin = async (event) => {
       event.preventDefault();
       const formData = {
         email: event.target.email.value,
@@ -40,7 +40,7 @@ export default function CreatorLogin() {
       <div>
         <h2>Login</h2>
         <br></br>
-        <form className="form" onSubmit={handleLogin}>
+        <form className="form" onSubmit={handleCreatorLogin}>
           <input
             type="email"
             placeholder="Enter email"

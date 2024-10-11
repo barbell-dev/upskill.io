@@ -2,6 +2,8 @@ const { Router } = require("express");
 const creatorAuth = require("../middlewares/creatorAuth");
 const { CourseCreatorsModel, CoursesModel } = require("../db/db");
 const jwt = require("jsonwebtoken");
+const { z } = require("zod");
+const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 dotenv.config();
 const aws = require("aws-sdk");
@@ -48,7 +50,7 @@ creatorRouter.post("/signup", async (req, res) => {
     });
     if (checkIfUserAlreadyExists) {
       res.json({
-        message: `User with given email already exists.Try again with a different email.`,
+        message: `Creator with given email already exists.Try again with a different email.`,
         status: 403,
       });
       return;
