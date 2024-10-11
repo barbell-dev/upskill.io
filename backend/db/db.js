@@ -36,10 +36,10 @@ Courses:{
 */
 
 const UsersSchema = new mongoose.Schema({
-  firstName: String,
-  lastName: String,
-  email: { type: String, unique: true },
-  password: String,
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  email: { type: String, unique: true, required: true },
+  password: { type: String, required: true },
 });
 const UsersModel = mongoose.model("Users", UsersSchema);
 const CourseCreatorsSchema = new mongoose.Schema({
@@ -60,8 +60,8 @@ const CoursesSchema = new mongoose.Schema({
     ref: "CourseCreators",
     required: true,
   },
-  amount: Number,
-  courseThumbnailUrl: String,
+  amount: { type: Number, required: true },
+  courseThumbnailUrl: { type: String, required: true },
 });
 const CoursesModel = mongoose.model("Courses", CoursesSchema);
 const PurchasesSchema = new mongoose.Schema({
