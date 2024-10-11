@@ -6,7 +6,8 @@ import "./App.css";
 import Dashboard from "./Dashboard";
 import Login from "./Login";
 import Signup from "./Signup";
-import AdminDashboard from "./AdminDashboard";
+import CreatorDashboard from "./CreatorDashboard";
+import CreatorLogin from "./CreatorLogin";
 function App() {
   // console.log(document.querySelector("#root").parentElement);
   return (
@@ -15,7 +16,9 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/creator/dashboard" element={<CreatorDashboard />} />
+
+        <Route path="/creator/login" element={<CreatorLogin />} />
       </Routes>
     </BrowserRouter>
   );

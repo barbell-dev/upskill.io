@@ -1,10 +1,9 @@
-export default function Login() {
-  // alert("here");
+export default function CreatorLogin() {
   const token = localStorage.getItem("token");
   // alert(token);
   console.log(token);
   if (token != null && token != undefined) {
-    window.location.href = "/dashboard";
+    window.location.href = "/creator/dashboard";
   } else {
     const handleLogin = async (event) => {
       event.preventDefault();
@@ -14,7 +13,7 @@ export default function Login() {
       };
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/user/login",
+          "http://localhost:8080/api/v1/creator/login",
           {
             method: "POST",
             headers: {
@@ -27,7 +26,7 @@ export default function Login() {
         const result = await response.json();
         if (result.status == 200) {
           localStorage.setItem("token", result.token);
-          window.location.href = "/dashboard";
+          window.location.href = "/creator/dashboard";
         } else {
           alert("Incorrect email/password");
           return;
@@ -60,11 +59,8 @@ export default function Login() {
           <br></br>
         </form>
         <p>
-          Dont have an account? <a href="/signup">Signup</a>
+          Dont have an account? <a href="/creator/signup">Creator Signup</a>
           <br></br>
-        </p>
-        <p>
-          Are you a creator? <a href="/creator/login">Creator Login</a>
         </p>
       </div>
     );
