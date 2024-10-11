@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const { CourseCreatorsModel } = require("../db/db");
 async function creatorAuth(req, res, next) {
   let token = req.headers.token;
-  console.log(token);
+  // console.log(token);
   if (token != "null" && token != "undefined") {
     try {
       const verifyToken = jwt.verify(token, process.env.JWT_ADMIN_SECRET);

@@ -16,6 +16,7 @@ aws.config.update({
 });
 const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME;
 const s3 = new aws.S3();
+const thumbNailMulter = multer();
 const upload = multer({
   storage: multerS3({
     s3: s3,
@@ -105,36 +106,41 @@ creatorRouter.post("/login", async (req, res) => {
 });
 
 // creatorRouter.use(creatorAuth);
-creatorRouter.post("/createCourse", upload.single("file"), async (req, res) => {
-  //Mongo sh
-  let courseName = req.body.courseName;
-  let amount = req.body.amount;
-  let token = req.headers.token;
-  let coursesSearch = await CoursesModel.findOne({ courseName: courseName });
-  console.log("here");
-  if (coursesSearch) {
-    res.json({ message: "Course with the given name already exists." });
-    return;
-  } else {
-    let courseCreatorData = jwt.verify(token, process.env.JWT_ADMIN_SECRET);
-    let courseCreatorId = courseCreatorData.id;
+creatorRouter.post(
+  "/createCourse",
+  thumbNailMulter.single("image"),
+  async (req, res) => {
+    //Mongo sh
+    console.log(req.body, " ", req.file);
+    let courseName = req.body.courseName;
+    let amount = req.body.amount;
+    let token = req.headers.token;
+    let coursesSearch = await CoursesModel.findOne({ courseName: courseName });
+    console.log("here");
+    if (coursesSearch) {
+      res.json({ message: "Course with the given name already exists." });
+      return;
+    } else {
+      let courseCreatorData = jwt.verify(token, process.env.JWT_ADMIN_SECRET);
+      let courseCreatorId = courseCreatorData.id;
 
-    await CoursesModel.create({
-      courseName: courseName,
-      courseCreatorId: courseCreatorId,
-      courseThumbnailUrl: req.file.location,
-      amount: amount,
-    })
-      .then(() => {
-        res.json({ message: "Course created successfully.", status: 200 });
-        return;
+      await CoursesModel.create({
+        courseName: courseName,
+        courseCreatorId: courseCreatorId,
+        courseThumbnailUrl: req.file.location,
+        amount: amount,
       })
-      .catch((e) => {
-        res.json({ message: `Unknown error occured. ${e}`, status: 503 });
-        return;
-      });
+        .then(() => {
+          res.json({ message: "Course created successfully.", status: 200 });
+          return;
+        })
+        .catch((e) => {
+          res.json({ message: `Unknown error occured. ${e}`, status: 503 });
+          return;
+        });
+    }
   }
-});
+);
 creatorRouter.get("/viewAllCourses", async (req, res) => {
   try {
     const allCourses = await CoursesModel.find();

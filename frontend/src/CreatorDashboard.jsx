@@ -9,6 +9,7 @@ export default function CreatorDashboard() {
     let formData = new FormData();
     // console.log(image);
     formData.append("image", image);
+    formData.append("courseName", event.target.courseName.value);
     formData.append("amount", event.target.amount.value);
     for (let i of formData.values()) {
       console.log(i);
@@ -19,12 +20,12 @@ export default function CreatorDashboard() {
         method: "POST",
         headers: {
           token: token,
-          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: formData,
       }
     );
     const result = await response.json();
+    console.log(result);
     if (result.status === 200) {
       alert("Course created successfully.");
       return;
@@ -50,7 +51,9 @@ export default function CreatorDashboard() {
           onChange={handleThumbnailChange}
         />
         <br></br>
-
+        <label>Course name</label>
+        <input type="text" name="courseName" />
+        <br></br>
         <label>Amount</label>
         <input type="number" name="amount" min="1" />
         <br></br>
