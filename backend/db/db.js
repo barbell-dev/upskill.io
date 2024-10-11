@@ -43,10 +43,10 @@ const UsersSchema = new mongoose.Schema({
 });
 const UsersModel = mongoose.model("Users", UsersSchema);
 const CourseCreatorsSchema = new mongoose.Schema({
-  firstName: String,
-  lastName: String,
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   email: { type: String, unique: true },
-  password: String,
+  password: { type: String, required: true },
 });
 const CourseCreatorsModel = mongoose.model(
   "CourseCreators",
@@ -54,7 +54,7 @@ const CourseCreatorsModel = mongoose.model(
 );
 
 const CoursesSchema = new mongoose.Schema({
-  courseName: { type: String, unique: true },
+  courseName: { type: String, unique: true, required: true },
   courseCreatorId: {
     type: mongoose.Schema.ObjectId,
     ref: "CourseCreators",
