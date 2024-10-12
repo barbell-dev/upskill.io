@@ -6,29 +6,49 @@ const { z } = require("zod");
 const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 dotenv.config();
-const aws = require("aws-sdk");
+
+const {
+  S3Client,
+  PutObjectCommand,
+  CreateBucketCommand,
+  DeleteObjectCommand,
+  DeleteBucketCommand,
+  paginateListObjectsV2,
+  GetObjectCommand,
+} = require("@aws-sdk/client-s3");
+// const aws = require("aws-sdk");
 const multer = require("multer");
 const multerS3 = require("multer-s3");
-aws.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
-});
+// aws.config.update({
+//   accessKeyId: process.env.AWS_ACCESS_KEY,
+//   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+//   region: process.env.AWS_REGION,
+// });
 const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME;
-const s3 = new aws.S3();
-const thumbNailMulter = multer();
-const upload = multer({
-  storage: multerS3({
-    s3: s3,
-    bucket: BUCKET_NAME,
-    metadata: function (req, file, cb) {
-      cb(null, { fieldName: file.fieldName });
-    },
-    key: function (req, file, cb) {
-      cb(null, file.originalname);
-    },
-  }),
+// const s3 = new aws.S3();
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+  endpoint: "https://s3.amazonaws.com",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
 });
+// await s3Client.send(new CreateBucketCommand({Bucket:BUCKET_NAME}));
+// await s3Client.send(new PutObjectCommand)
+const thumbNailMulter = multer();
+// const upload = multer({
+//   storage: multerS3({
+//     s3: s3,
+//     bucket: BUCKET_NAME,
+//     metadata: function (req, file, cb) {
+//       cb(null, { fieldName: file.fieldName });
+//     },
+//     key: function (req, file, cb) {
+//       cb(null, file.originalname);
+//     },
+//   }),
+// });
 const creatorRouter = Router();
 creatorRouter.post("/signup", async (req, res) => {
   const requiredBody = z.object({
@@ -104,12 +124,27 @@ creatorRouter.post("/login", async (req, res) => {
   }
   // The case where token does not exist in the headers is handled in the userAuth middleware itself.
 });
-
 // creatorRouter.use(creatorAuth);
 creatorRouter.post(
   "/createCourse",
   thumbNailMulter.single("image"),
   async (req, res) => {
+    try {
+      const file = req.file;
+      const objectKey = file.originalname;
+      const command = new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: objectKey,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      });
+      const response = await s3Client.send(command);
+      console.log("Image upload successful", response);
+      res.status(200).json({ message: "Image upload successful" });
+    } catch (e) {
+      console.log("error", e);
+      res.status(500).json({ message: "Unknown error occured." });
+    }
     //Mongo sh
     console.log(req.body, " ", req.file);
     let courseName = req.body.courseName;
