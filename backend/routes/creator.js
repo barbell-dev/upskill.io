@@ -139,41 +139,51 @@ creatorRouter.post(
         ContentType: file.mimetype,
       });
       const response = await s3Client.send(command);
-      console.log("Image upload successful", response);
-      res.status(200).json({ message: "Image upload successful" });
+      let courseName = req.body.courseName;
+      let amount = req.body.amount;
+      let token = req.headers.token;
+      let coursesSearch = await CoursesModel.findOne({
+        courseName: courseName,
+      });
+      // console.log("here");
+      if (coursesSearch) {
+        res.json({ message: "Course with the given name already exists." });
+        return;
+      } else {
+        let courseCreatorData = jwt.verify(token, process.env.JWT_ADMIN_SECRET);
+        let courseCreatorId = courseCreatorData.id;
+        console.log("here");
+        // let courseThumbnailUrl = req.protocol;
+        // Read the object.
+        const { Body } = await s3Client.send(
+          new GetObjectCommand({
+            Bucket: BUCKET_NAME,
+            Key: objectKey,
+          })
+        );
+
+        console.log(Body.req.host);
+        await CoursesModel.create({
+          courseName: courseName,
+          courseCreatorId: courseCreatorId,
+          courseThumbnailUrl: `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${objectKey}`,
+          amount: amount,
+        })
+          .then(() => {
+            res.json({ message: "Course created successfully.", status: 200 });
+            return;
+          })
+          .catch((e) => {
+            res.json({ message: `Unknown error occured. ${e}`, status: 503 });
+            return;
+          });
+      }
     } catch (e) {
       console.log("error", e);
       res.status(500).json({ message: "Unknown error occured." });
     }
     //Mongo sh
-    console.log(req.body, " ", req.file);
-    let courseName = req.body.courseName;
-    let amount = req.body.amount;
-    let token = req.headers.token;
-    let coursesSearch = await CoursesModel.findOne({ courseName: courseName });
-    console.log("here");
-    if (coursesSearch) {
-      res.json({ message: "Course with the given name already exists." });
-      return;
-    } else {
-      let courseCreatorData = jwt.verify(token, process.env.JWT_ADMIN_SECRET);
-      let courseCreatorId = courseCreatorData.id;
-
-      await CoursesModel.create({
-        courseName: courseName,
-        courseCreatorId: courseCreatorId,
-        courseThumbnailUrl: req.file.location,
-        amount: amount,
-      })
-        .then(() => {
-          res.json({ message: "Course created successfully.", status: 200 });
-          return;
-        })
-        .catch((e) => {
-          res.json({ message: `Unknown error occured. ${e}`, status: 503 });
-          return;
-        });
-    }
+    // console.log(req.body, " ", req.file);
   }
 );
 creatorRouter.get("/viewAllCourses", async (req, res) => {
