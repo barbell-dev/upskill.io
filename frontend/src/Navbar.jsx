@@ -2,13 +2,20 @@ import "./Navbar.css";
 import MyCourses from "./MyCourses";
 import AllCourses from "./AllCourses";
 import BuyCoffee from "./BuyCoffee";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaSignOutAlt } from "react-icons/fa"; // React Icons package
 
 export default function Navbar() {
   const [activeComponent, setActiveComponent] = useState(null);
   const token = localStorage.getItem("token");
-
+  useEffect(function () {
+    const myCoursesButton = document.querySelector("#my-courses");
+    myCoursesButton.addEventListener("click", handleMyCoursesClick());
+    const allCoursesButton = document.querySelector("#all-courses");
+    allCoursesButton.addEventListener("click", handleAllCoursesClick());
+    const buyCoffeeButton = document.querySelector("#buy-coffee");
+    buyCoffeeButton.addEventListener("click", handleBuyCoffeeClick());
+  }, []);
   const handleMyCoursesClick = () => {
     setActiveComponent("MyCourses");
   };
@@ -22,6 +29,7 @@ export default function Navbar() {
   };
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("mode");
     location.reload();
   };
   return (

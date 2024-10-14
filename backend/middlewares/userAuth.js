@@ -7,12 +7,13 @@ const { UsersModel } = require("../db/db");
 async function userAuth(req, res, next) {
   // log("here");
   let token = req.headers.token;
-  log(token);
+  // log(token);
   if (token != "null" && token != "undefined") {
-    log("1");
+    // log("1");
     try {
       const verifyToken = jwt.verify(token, process.env.JWT_SECRET);
       if (verifyToken) {
+        // console.log("here");
         next();
       } else {
         res.status(404).json({ message: "Invalid JSON token.", status: 404 });

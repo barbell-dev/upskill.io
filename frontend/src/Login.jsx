@@ -2,8 +2,10 @@ export default function Login() {
   // alert("here");
   const token = localStorage.getItem("token");
   // alert(token);
+
   console.log(token);
   if (token != null && token != undefined) {
+    localStorage.setItem("mode", "user");
     window.location.href = "/dashboard";
   } else {
     const handleLogin = async (event) => {
@@ -27,6 +29,7 @@ export default function Login() {
         const result = await response.json();
         if (result.status == 200) {
           localStorage.setItem("token", result.token);
+          localStorage.setItem("mode", "user");
           window.location.href = "/dashboard";
         } else {
           alert("Incorrect email/password");

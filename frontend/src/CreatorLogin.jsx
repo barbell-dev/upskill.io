@@ -1,8 +1,10 @@
 export default function CreatorLogin() {
+  // window.history.
   const token = localStorage.getItem("token");
   // alert(token);
   console.log(token);
   if (token != null && token != undefined) {
+    localStorage.setItem("mode", "creator");
     window.location.href = "/creator/dashboard";
   } else {
     const handleCreatorLogin = async (event) => {
@@ -28,7 +30,10 @@ export default function CreatorLogin() {
         // console.log(result);
         if (response.status == 200) {
           localStorage.setItem("token", result.token);
+
+          localStorage.setItem("mode", "creator");
           window.location.href = "/creator/dashboard";
+          window.history.forward();
         } else {
           alert("Incorrect email/password");
           return;

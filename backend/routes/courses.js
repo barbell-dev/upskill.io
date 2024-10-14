@@ -55,14 +55,20 @@ coursesRouter.get("/viewPurchasedCourses", async (req, res) => {
   }
 });
 coursesRouter.get("/viewAllCourses", async (req, res) => {
-  const allCourses = await CoursesModel.find().then(() => {
+  // console.log("in veiwALl");
+  try {
+    const allCourses = await CoursesModel.find();
+
     res.status(200).json({
       message: "Fetched all courses successfully.",
       status: 200,
       allCourses: allCourses,
     });
+    console.log("i");
     return;
-  });
+  } catch (e) {
+    res.status(503).json({ message: `${e}`, status: 503 });
+  }
 });
 coursesRouter.get("/viewParticularCourse", (req, res) => {
   const courseName = req.body.courseName;
